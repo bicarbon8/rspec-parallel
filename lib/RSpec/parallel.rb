@@ -32,28 +32,24 @@ module RSpec
   module Parallel
     # Runs all the examples in this group in a separate thread for each
     def RSpec::Core::ExampleGroup.run_parallel(reporter, num_threads, mutex, used_threads)
-      if RSpec.world.wants_to_quit
-        RSpec.world.clear_remaining_example_groups if top_level?
+      if RSpec.wants_to_quit
+        RSpec.clear_remaining_example_groups if top_level?
         return
       end
       reporter.example_group_started(self)
 
       begin
-        run_before_context_hooks(new)
+        run_before_all_hooks(new)
         example_threads = RSpec::Parallel::ExampleThreadRunner.new(num_threads, used_threads)
         run_examples_parallel(reporter, example_threads, mutex)
-        ordering_strategy.order(children).map do |child| 
-          enhance_example_group(child).run_parallel(reporter, num_threads, mutex, used_threads) 
-        end
+        children.ordered.map {|child| child.run_parallel(reporter, num_threads, mutex, used_threads)}
         example_threads.wait_for_completion
-      rescue Pending::SkipDeclaredInExample => ex
-        for_filtered_examples(reporter) { |example| example.skip_with_exception(reporter, ex) }
       rescue Exception => ex
-        RSpec.world.wants_to_quit = true if fail_fast?
-        for_filtered_examples(reporter) { |example| example.fail_with_exception(reporter, ex) }
+        RSpec.wants_to_quit = true if fail_fast?
+        fail_filtered_examples(ex, reporter)
       ensure
-        run_after_context_hooks(new)
-        before_context_ivars.clear
+        run_after_all_hooks(new)
+        before_all_ivars.clear
         reporter.example_group_finished(self)
       end
     end
@@ -61,13 +57,14 @@ module RSpec
     # @private
     # Runs the examples in this group in a separate thread each
     def RSpec::Core::ExampleGroup.run_examples_parallel(reporter, threads, mutex)
-      ordering_strategy.order(filtered_examples).map do |example|
-        next if RSpec.world.wants_to_quit
+      filtered_examples.ordered.map do |example|
+        next if RSpec.wants_to_quit
         instance = new
-        set_ivars(instance, before_context_ivars)
+        set_ivars(instance, before_all_ivars)
         mutex.synchronize do
           threads.run(example, instance, reporter)
         end
+        RSpec.wants_to_quit = true if fail_fast?
       end
     end
     

@@ -1,9 +1,10 @@
 # -*- encoding: utf-8 -*-
 $LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
+require "rspec/parallel/version"
 
 Gem::Specification.new do |s|
   s.name        = 'rspec-parallel'
-  s.version     = RSpec::Core::Version::STRING
+  s.version     = RSpec::Parallel::Version::STRING
   s.date        = '2014-05-18'
   s.summary     = "Parallel rspec execution gem"
   s.description = "Bolt-on gem allowing for parallel execution of examples using rspec's framework"
@@ -13,8 +14,9 @@ Gem::Specification.new do |s|
   s.license     = 'MIT'
   s.bindir       = 'bin'
   s.files        = `git ls-files -- lib/*`.split("\n")
-  s.executables  = `git ls-files -- bin/*`.split("\n")
+  s.executables  = `git ls-files -- exe/*`.split("\n").map{ |f| File.basename(f) }
   s.require_path = "lib"
+  s.required_ruby_version = '>= 1.8.7'
   if RSpec::Parallel::Version::STRING =~ /[a-zA-Z]+/
     # rspec-support is locked to our version when running pre,rc etc
     s.add_runtime_dependency "rspec", "= #{RSpec::Parallel::Version::STRING}"
