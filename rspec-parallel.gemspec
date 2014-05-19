@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.license     = 'MIT'
   s.bindir       = 'bin'
   s.files        = `git ls-files -- lib/*`.split("\n")
-  s.executables  = `git ls-files -- exe/*`.split("\n").map{ |f| File.basename(f) }
+  s.executables  = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_path = "lib"
   s.required_ruby_version = '>= 1.8.7'
   if RSpec::Parallel::Version::STRING =~ /[a-zA-Z]+/
