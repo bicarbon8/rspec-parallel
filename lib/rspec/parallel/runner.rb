@@ -23,21 +23,21 @@ module RSpec
         options.parse_options
 
         parallel = (options.options[:thread_maximum].nil?) ? false : true
+        drb = options.options[:drb]
 
-        if options.options[:drb]
+        if drb
           require 'rspec/core/drb_command_line'
           begin
             DRbCommandLine.new(options).run(err, out)
           rescue DRb::DRbConnError
             err.puts "No DRb server is running. Running in local process instead ..."
-            if parallel
-              CommandLine.new(options).run_parallel(err, out)
-            else
-              CommandLine.new(options).run(err, out)
-            end
+            drb = false
           end
-        else
+        end
+
+        unless drb
           if parallel
+            require 'thread'
             CommandLine.new(options).run_parallel(err, out)
           else
             CommandLine.new(options).run(err, out)
