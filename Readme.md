@@ -1,41 +1,34 @@
 # Run rspec tests in Parallel.
 
-This gem will scan the specified directory for all spec files (those ending in '_spec.rb') and will collect a list of tests from within any matching files. These tests will then be evenly distributed among multiple parallel threads for execution using 'rspec'.
+This gem will add some extra methods to rspec allowing for execution of examples in parallel by passing in an additional option of *--parallel-test* followed by the number of parallel threads to use.
+The main concept and differentiator from other gems that allow for parallel execution of rspec tests (such as parallel-tests and prspec) is that this gem ensures that all suite, context and all before and after blocks are run only once while the before and after each blocks are run for each example. Additionally, all output formatters will report to a single output file instead of multiple files so there will be no need for consolidating results at the end of testing
 
 ### Build Gem
 ```ruby
-gem build prspec.gemspec
+gem build rspec-parallel.gemspec
 ```
 
 ### Install
 ```ruby
-gem install prspec-[version].gem
+gem install rspec-parallel-[version].gem
 ```
 or get from rubygems.org
 ```ruby
-gem install prspec
+gem install rspec-parallel
 ```
 
 ### Run
-    prspec                      				# Run from current directory with default values (looks for tests in a 'spec' subdirectory)
-    prspec -n 2                 				# Run from current directory using 2 threads (number will be reduced if number of tests is less than number of threads)
-    prspec -d ../RspecTests     				# Run from '../RspecTests' directory
-    prspec -p spec/ui_tests     				# Run from current directory executing only tests found in the 'spec/ui_tests' subdirectory and its child directories
-    prspec -d ../RspecTests -p spec/ui_tests 	# Run from '../RspecTests' directory executing only tests found in the '../RspecTests/spec/ui_tests' subdirectory and its child directories
-    prspec -t functional						# Run from current directory with default values any tests tagged with ':functional'
-    prspec -t functional:always					# Run from current directory with default values any tests tagged with ':functional => "always"'
-    prspec --test-mode 							# Test Mode: Run everything except for actually starting the parallel threads
-    prspec -q 									# Quiet Mode: all output from the parallel threads will be hidden
-    prspec -h 									# Display help message
-    ...
+```
+rspec --parallel-test 4          # run from the default 'spec' directory using 4 threads
+```
 
 ### Known Issues
-default directory detection was shown to not work on 1 user's windows 8 machine.  In this scenario, using "-p spec" solved the problem
+n/a
 
 ===================
 
 Authors
 ====
-inspired by [grosser/parallel_tests](https://github.com/grosser/parallel_tests)<br />
+inspired by [rspec-core pull request 1527](https://github.com/rspec/rspec-core/pull/1527)<br />
 [Jason Holt Smith](https://github.com/bicarbon8)<br/>
 bicarbon8@gmail.com<br/>
