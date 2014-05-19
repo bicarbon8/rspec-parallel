@@ -3,7 +3,7 @@ module RSpec
     # Version information for RSpec Parallel.
     module Version
       # Current version of RSpec Parallel, in semantic versioning format.
-      STRING = '2.14.8.2'
+      STRING = '2.14.8.3'
     end
   end
 end

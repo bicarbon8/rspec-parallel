@@ -13,26 +13,36 @@ require_rspec['parallel/version']
 require_rspec['parallel/configuration']
 require_rspec['parallel/option_parser']
 require_rspec['parallel/configuration_options']
+require_rspec['parallel/command_line']
 require_rspec['parallel/example_thread_runner']
 require_rspec['parallel/example_group_thread_runner']
 require_rspec['parallel/runner']
 
 module RSpec
-  # Returns the global [Configuration](RSpec/Parallel/Configuration) object. While you
+  # Returns the global [Configuration](RSpec/Core/Configuration) object. While you
   # _can_ use this method to access the configuration, the more common
   # convention is to use [RSpec.configure](RSpec#configure-class_method).
   #
   # @example
   #     RSpec.configuration.drb_port = 1234
   # @see RSpec.configure
-  # @see Parallel::Configuration
+  # @see Core::Configuration
   def self.configuration
-    @configuration ||= begin
-                         config = RSpec::Parallel::Configuration.new
-                         config.expose_dsl_globally = true
-                         config
-                       end
+    if block_given?
+      RSpec.warn_deprecation <<-WARNING
 
+*****************************************************************
+DEPRECATION WARNING
+
+* RSpec.configuration with a block is deprecated and has no effect.
+* please use RSpec.configure with a block instead.
+
+Called from #{caller(0)[1]}
+*****************************************************************
+
+WARNING
+    end
+    @configuration ||= RSpec::Parallel::Configuration.new
   end
 
   module Parallel

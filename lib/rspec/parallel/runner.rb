@@ -19,10 +19,10 @@ module RSpec
       # * +Fixnum+ - exit status code (0/1)
       def self.run(args, err=$stderr, out=$stdout)
         trap_interrupt
-        options = ConfigurationOptions.new(args)
+        options = RSpec::Parallel::ConfigurationOptions.new(args)
         options.parse_options
-
         parallel = (options.options[:thread_maximum].nil?) ? false : true
+        
         drb = options.options[:drb]
 
         if drb
@@ -38,9 +38,9 @@ module RSpec
         unless drb
           if parallel
             require 'thread'
-            CommandLine.new(options).run_parallel(err, out)
+            RSpec::Parallel::CommandLine.new(options).run(err, out)
           else
-            CommandLine.new(options).run(err, out)
+            RSpec::Core::CommandLine.new(options).run(err, out)
           end
         end
       ensure
