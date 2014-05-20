@@ -22,6 +22,65 @@ gem install rspec-parallel
 rspec --parallel-test 4          # run from the default 'spec' directory using 4 threads
 ```
 
+### Examples
+Using the following spec file:
+```ruby
+RSpec.configure do |config|
+  config.before(:suite) { puts 'Before Suite' }
+  config.before(:all) { puts 'Before All' }
+  config.before(:each) { puts 'Before Each' }
+  config.after(:each) { puts 'After Each' }
+  config.after(:all) { puts 'After All' }
+  config.after(:suite) { puts 'After Suite' }
+end
+
+describe 'Parallel Testing' do
+  it 'example 1' do sleep 2; puts 'Example 1' end
+  it 'example 2' do sleep 2; puts 'Example 2' end
+end
+```
+#### Difference between rspec-parallel and other, similar gems (like prspec)
+``` 
+> rspec --parallel-test 2
+Before Suite
+Before All
+Before Each
+Example 2
+After Each
+Before Each
+Example 1
+After Each
+After All
+After Suite
+
+
+Finished in 2.01 seconds
+2 examples, 0 failures
+```
+```
+> prspec -n 2
+Before Suite
+Before Suite
+Before All
+Before All
+Before Each
+Example 1
+Before Each
+Example 2
+After Each
+After Each
+After All
+After All
+After Suite
+After Suite
+
+
+Finished in 2.01 seconds
+1 example, 0 failures
+Finished in 2.01 seconds
+1 example, 0 failures
+```
+
 ### Known Issues
 n/a
 
