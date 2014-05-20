@@ -8,7 +8,8 @@ The main concept and differentiator from other gems that allow for parallel exec
 gem build rspec-parallel.gemspec
 ```
 
-### Install (current supported version of rspec is 2.14.x in the 2.14 branch of this repo)
+### Install 
+<span style="color:green;">current supported version of rspec is 2.14.x in the 2.14 branch of this repo</span>
 ```ruby
 gem install rspec-parallel-[version].gem
 ```
