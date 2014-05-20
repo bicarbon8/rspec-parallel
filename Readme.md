@@ -24,7 +24,7 @@ rspec --parallel-test 4          # run from the default 'spec' directory using 4
 
 ### Examples
 #### Difference between rspec-parallel and other, similar gems
-Using one spec file with 2 examples in a single example\_group (the _describe_ block):
+Using one spec file with 2 examples in a single example_group (the _describe_ block):
 ```ruby
 RSpec.configure do |config|
   config.before(:suite) { puts 'Before Suite' }
@@ -47,8 +47,9 @@ end
 Comparison between _rspec-parallel_, _prspec_ and _parallel\_tests_
 
 | ``` > rspec --parallel-test 2 ``` | ``` > prspec -n 2 ``` | ``` > parallel_rspec spec -n 2 ``` |
-| --------------------------------- | --------------------- | ---------------------------------- |
+| --------------------------------- | --------------------- | ----------------------------- |
 |     Before Suite<br />Before All<br />Before Each<br />Example 2<br />After Each<br />Before Each<br />Example 1<br />After Each<br />After All<br />After Suite<br /><br /><br />Finished in 2.01 seconds<br />2 examples, 0 failures<br /> |     Before Suite<br />Before Suite<br />Before All<br />Before All<br />Before Each<br />Example 1<br />Before Each<br />Example 2<br />After Each<br />After Each<br />After All<br />After All<br />After Suite<br />After Suite<br /><br /><br />Finished in 2.01 seconds<br />1 example, 0 failures<br />Finished in 2.01 seconds<br />1 example, 0 failures<br /> |     Before Suite<br />Before All<br />Before Each<br />Example 1<br />After Each<br />Before Each<br />Example 2<br />After Each<br />After All<br />After Suite<br /><br /><br />Finished in 4 seconds<br />examples, 0 failures<br /><br />2 examples, 0 failures<br /><br />Took 4.36225 seconds<br /> |
+| Total execution time is 2.01 seconds (both examples run in parallel) | Total execution time is 2.01 seconds (both examples run in parallel) | Total execution time is 4.36 seconds (both examples run sequentially because parallel_tests splits by spec file, not example) |
 
 Using two spec files with 2 examples in each (spec_helper.rb is used for before(:suite) to ensure both spec files have access to it):
 ```ruby
@@ -97,8 +98,9 @@ end
 Comparison between _rspec-parallel_, _prspec_ and _parallel\_tests_
 
 | ``` > rspec --parallel-test 4 ``` | ``` > prspec -n 4 ``` | ``` > parallel_rspec spec -n 4 ``` |
-| --------------------------------- | --------------------- | ---------------------------------- |
+| --------------------------------- | --------------------- | ----------------------------- |
 |     Before Suite<br />Before All Two<br />Before All One<br />Before Each Two<br />Before Each Two<br />Before Each One<br />Before Each One<br />Example 3<br />After Each Two<br />Example 4<br />After Each Two<br />Example 2<br />After Each One<br />Example 1<br />After Each One<br />After All Two<br />After All<br />After Suite<br /><br /><br />Finished in 2.02 seconds<br />4 examples, 0 failures<br /> |     Before Suite<br />Before All Two<br />Before Each Two<br />Before Suite<br />Before All Two<br />Before Each Two<br />Before Suite<br />Before All One<br />Before Each One<br />Before Suite<br />Before All One<br />Before Each One<br />Example 4<br />After Each Two<br />After All Two<br />After Suite<br /><br /><br />Finished in 2.01 seconds<br />1 example, 0 failures<br />Example 3<br />After Each Two<br />After All Two<br />After Suite<br /><br /><br />Finished in 2.01 seconds<br />1 example, 0 failures<br />Example 2<br />After Each One<br />After All One<br />After Suite<br /><br /><br />Finished in 2.01 seconds<br />1 example, 0 failures<br />Example 1<br />After Each One<br />After All One<br />After Suite<br /><br /><br />Finished in 2.01 seconds<br />1 example, 0 failures<br /> |     Before Suite<br />Before All Two<br />Before Each Two<br />Before Suite<br />Before All One<br />Before Each One<br />Example 3<br />After Each Two<br />Before Each Two<br />Example 1<br />After Each One<br />Before Each One<br />Example 4<br />After Each Two<br />After All Two<br />After Suite<br /><br /><br />Finished in 4.01 seconds<br />examples, 0 failures<br />Example 2<br />After Each One<br />After All One<br />After Suite<br /><br /><br />Finished in 4 seconds<br />examples, 0 failures<br /><br />4 examples, 0 failures<br /><br />Took 4.406252 seconds<br /> |
+| Total execution time is 2.02 seconds (all 4 examples run in parallel) | Total execution time is 2.01 seconds (all 4 examples run in parallel) | Total execution time is 4.40 seconds (both spec files run in parallel, but each example in the spec files is run sequentially because parallel_tests splits by spec file, not example) |
 
 ### Known Issues
 n/a
