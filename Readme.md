@@ -3,13 +3,18 @@
 This gem will add some extra methods to rspec allowing for execution of examples in parallel by passing in an additional option of *--parallel-test* followed by the number of parallel threads to use.
 The main concept and differentiator from other gems that allow for parallel execution of rspec tests (such as parallel_tests and prspec) is that this gem ensures that all suite, context and all before and after blocks are run only once while the before and after each blocks are run for each example. Additionally, all output formatters will report to a single output file instead of multiple files so there will be no need for consolidating results at the end of testing
 
+### Supported RSpec Versions
+- 2.14.8
+    - [RubyGems Link](http://rubygems.org/gems/rspec-parallel)
+    - [GitHub Link](https://github.com/bicarbon8/rspec-parallel/tree/2-14)
+- 3.0.0 (coming soon)
+
 ### Build Gem
 ```ruby
 gem build rspec-parallel.gemspec
 ```
 
 ### Install 
-<span style="color:green;">current supported version of rspec is 2.14.x in the 2.14 branch of this repo</span>
 ```ruby
 gem install rspec-parallel-[version].gem
 ```
