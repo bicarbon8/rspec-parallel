@@ -13,6 +13,10 @@ module RSpec
       def command_line_options
         @command_line_options ||= RSpec::Parallel::Parser.parse!(@args).merge :files_or_directories_to_run => @args
       end
+
+      def options_from(path)
+        RSpec::Parallel::Parser.parse(args_from_options_file(path))
+      end
     end
   end
 end
