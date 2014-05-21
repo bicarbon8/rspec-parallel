@@ -5,8 +5,8 @@ The main concept and differentiator from other gems that allow for parallel exec
 
 ### Supported RSpec Versions
 - 2.14.8
-    - [RubyGems Link](http://rubygems.org/gems/rspec-parallel)
-    - [GitHub Link](https://github.com/bicarbon8/rspec-parallel/tree/2-14)
+    - rspec-parallel-2.14.8.x at [RubyGems.org](http://rubygems.org/gems/rspec-parallel)
+    - rspec-parallel-2.14.8.x at [GitHub.com](https://github.com/bicarbon8/rspec-parallel/tree/2-14)
 - 3.0.0 (coming soon)
 
 ### Build Gem
