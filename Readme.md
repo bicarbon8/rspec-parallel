@@ -32,7 +32,7 @@ rspec --parallel-test 4          # run from the default 'spec' directory using 4
 moved to wiki at [Examples](https://github.com/bicarbon8/rspec-parallel/wiki/Examples)
 
 ### Known Issues
-n/a
+- this gem must overwrite the rspec-core executable in order to allow for processing of the additional arguments. this can cause issues if using with the *bundler* gem as it may not be able to handle the overwrite and the arguments will then not be recognised
 
 ===================
 
