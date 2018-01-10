@@ -5,7 +5,7 @@ require "rspec/parallel/version"
 Gem::Specification.new do |s|
   s.name        = 'rspec-parallel'
   s.version     = RSpec::Parallel::Version::STRING
-  s.date        = '2014-05-18'
+  s.date        = '2018-01-10'
   s.summary     = "Parallel rspec execution gem"
   s.description = "Bolt-on gem allowing for parallel execution of examples using rspec's framework"
   s.authors     = ["Jason Holt Smith"]

@@ -1,6 +1,51 @@
 module RSpec
   module Parallel
-    class Runner < RSpec::Core::Runner
+    # Provides the main entry point to run a suite of RSpec examples.
+    class Runner
+      # @attr_reader
+      # @private
+      attr_reader :options, :configuration, :world
+
+      # Register an `at_exit` hook that runs the suite when the process exits.
+      #
+      # @note This is not generally needed. The `rspec` command takes care
+      #       of running examples for you without involving an `at_exit`
+      #       hook. This is only needed if you are running specs using
+      #       the `ruby` command, and even then, the normal way to invoke
+      #       this is by requiring `rspec/autorun`.
+      def self.autorun
+        if autorun_disabled?
+          RSpec.deprecate("Requiring `rspec/autorun` when running RSpec via the `rspec` command")
+          return
+        elsif installed_at_exit? || running_in_drb?
+          return
+        end
+
+        at_exit { perform_at_exit }
+        @installed_at_exit = true
+      end
+
+      # @private
+      def self.perform_at_exit
+        # Don't bother running any specs and just let the program terminate
+        # if we got here due to an unrescued exception (anything other than
+        # SystemExit, which is raised when somebody calls Kernel#exit).
+        return unless $!.nil? || $!.is_a?(SystemExit)
+
+        # We got here because either the end of the program was reached or
+        # somebody called Kernel#exit. Run the specs and then override any
+        # existing exit status with RSpec's exit status if any specs failed.
+        invoke
+      end
+
+      # Runs the suite of specs and exits the process with an appropriate exit
+      # code.
+      def self.invoke
+        disable_autorun!
+        status = run(ARGV, $stderr, $stdout).to_i
+        exit(status) if status != 0
+      end
+
       # Run a suite of RSpec examples. Does not exit.
       #
       # This is used internally by RSpec to run a suite, but is available
@@ -20,36 +65,10 @@ module RSpec
         trap_interrupt
         options = ConfigurationOptions.new(args)
 
-        if options.options[:drb]
-          require 'rspec/core/drb'
-          begin
-            DRbRunner.new(options).run(err, out)
-          rescue DRb::DRbConnError
-            err.puts "No DRb server is running. Running in local process instead ..."
-            new(options).run(err, out)
-          end
+        if options.options[:runner]
+          options.options[:runner].call(options, err, out)
         else
           new(options).run(err, out)
-        end
-      end
-
-      def initialize(options, configuration=RSpec.configuration, world=RSpec.world)
-        @options       = options
-        @configuration = configuration
-        @world         = world
-      end
-
-      # Configures and runs a spec suite.
-      #
-      # @param err [IO] error stream
-      # @param out [IO] output stream
-      def run(err, out)
-        setup(err, out)
-        if @options.options[:thread_maximum].nil?
-          run_specs(@world.ordered_example_groups)
-        else
-          require 'thread'
-          run_specs_parallel(@world.ordered_example_groups)
         end
       end
 
@@ -59,17 +78,17 @@ module RSpec
       # @return [Fixnum] exit status code. 0 if all specs passed,
       #   or the configured failure exit code (1 by default) if specs
       #   failed.
-      def run_specs_parallel(example_groups)
+      def self.run_specs_parallel(example_groups)
         @configuration.reporter.report(@world.example_count(example_groups)) do |reporter|
           begin
             hook_context = RSpec::Core::SuiteHookContext.new
             @configuration.hooks.run(:before, :suite, hook_context)
-            
+
             group_threads = RSpec::Parallel::ExampleGroupThreadRunner.new(@configuration.thread_maximum)
             example_groups.each { |g| group_threads.run(g, reporter) }
             group_threads.wait_for_completion
 
-            example_groups.all? do |g| 
+            example_groups.all? do |g|
               result_for_this_group = g.filtered_examples.all? { |example| example.metadata[:execution_result].exception.nil? }
               results_for_descendants = g.children.all? { |child| child.filtered_examples.all? { |example| example.metadata[:execution_result].exception.nil? } }
               result_for_this_group && results_for_descendants
